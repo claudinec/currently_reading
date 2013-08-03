@@ -12,8 +12,6 @@
  * Implements hook_menu().
  */
 function currently_reading_menu() {
-  $items = array();
-
   $items['admin/config/services/currently-reading'] = array(
     'type' => MENU_LOCAL_TASK,
     'title' => 'Currently Reading',
@@ -33,6 +31,34 @@ function currently_reading_permission() {
     'administer currently_reading settings' => array(
       'title' => t('Administer currently_reading settings')),
   );
+}
+
+/**
+ * Implements hook_block_info().
+ */
+function currently_reading_block_info() {
+  $blocks['currently_reading'] = array(
+    'info' => 'Currently Reading',
+  );
+
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function currently_reading_block_view($delta = '') {
+  if ($delta == 'currently_reading') {
+    $block['subject'] = t('Currently Reading');
+
+    // Fetch Goodreads currently-reading shelf.
+    $goodreads_apikey = variable_get('goodreads_apikey');
+    $goodreads_userid = variable_get('goodreads_userid');
+    if ($goodreads_apikey != '' and $goodreads_userid != '') {
+      $block['content'] = currently_reading_fetch_goodreads($goodreads_apikey, $goodreads_userid);
+    }
+  }
+  return $block;
 }
 
 /**
@@ -74,5 +100,22 @@ function currently_reading_config_form($form, &$form_state) {
  * @param str $goodreads_userid
  */
 function currently_reading_fetch_goodreads($goodreads_apikey, $goodreads_userid) {
+  // Fetch currently-reading shelf.
   $url = 'http://www.goodreads.com/review/list?format=xml&v=2&shelf=currently-reading&id=' . $goodreads_userid . '&key=' . $goodreads_apikey;
+  $xml = file_get_contents($url);
+
+  // Format data ...
+  // $response = new SimpleXMLElement($xml);
+  // dpm($response);
+  // dpm($response->count());
+  $iterator = new SimpleXMLIterator($xml);
+  if ($iterator->valid()) {
+    dpm($iterator->current());
+  }
+  // dpm($response->reviews->review->book);
+  // title
+  // authors.author.name (just get the first author?)
+
+  // Display data ...
+  // Goodreads branding ...
 }
