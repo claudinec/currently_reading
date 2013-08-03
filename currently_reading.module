@@ -100,7 +100,11 @@ function currently_reading_config_form($form, &$form_state) {
  * @param str $goodreads_userid
  */
 function currently_reading_fetch_goodreads($goodreads_apikey, $goodreads_userid) {
-  $content = '<ul>';
+  // Goodreads branding.
+  $content = '<p>Currently reading on Goodreads:</p>';
+
+  $content = $content . '<ul>';
+
   // Fetch currently-reading shelf.
   $url = 'http://www.goodreads.com/review/list?format=json&v=2&shelf=currently-reading&id=' . $goodreads_userid . '&key=' . $goodreads_apikey;
   $json = file_get_contents($url);
@@ -115,8 +119,6 @@ function currently_reading_fetch_goodreads($goodreads_apikey, $goodreads_userid)
     // title
     // authors.author.name (just get the first author?)
   }
-
-  // Goodreads branding ...
 
   $content = $content . '</ul>';
   return $content;
