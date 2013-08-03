@@ -1,0 +1,78 @@
+<?php
+/**
+ * @file
+ * This is a Drupal 7 module to display a block of a 'currently
+ * reading' booklist extracted from a social booklist site.
+ *
+ * I see this as particularly useful for personal websites and blogs
+ * so this uses site-wide rather than user-configurable settings.
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function currently_reading_menu() {
+  $items = array();
+
+  $items['admin/config/services/currently-reading'] = array(
+    'type' => MENU_LOCAL_TASK,
+    'title' => 'Currently Reading',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('currently_reading_config_form'),
+    'access arguments' => array('Administer currently_reading settings'),
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_permission().
+ */
+function currently_reading_permission() {
+  return array(
+    'administer currently_reading settings' => array(
+      'title' => t('Administer currently_reading settings')),
+  );
+}
+
+/**
+ * Module settings:
+ * - Which service/s to use (currently Goodreads)
+ * - API keys for each service
+ */
+function currently_reading_config_form($form, &$form_state) {
+  $goodreads_apikey = variable_get('goodreads_apikey');
+  $goodreads_userid = variable_get('goodreads_userid');
+  
+  // Build configuration form.
+  $form['goodreads_config'] = array(
+    '#title' => 'Goodreads configuration',
+    '#type' => 'fieldset',
+    
+    'goodreads_apikey' => array(
+      '#title' => t('Developer API key'),
+      '#type' => 'textfield',
+      '#required' => TRUE,
+      '#default_value' => $goodreads_apikey,
+    ),
+    
+    'goodreads_userid' => array(
+      '#title' => t('User ID'),
+      '#type' => 'textfield',
+      '#required' => TRUE,
+      '#default_value' => $goodreads_userid,
+    ),
+  );
+
+  return system_settings_form($form);
+}
+
+/**
+ * Fetch the currently-reading shelf for this user on Goodreads.
+ *
+ * @param str $goodreads_apikey
+ * @param str $goodreads_userid
+ */
+function currently_reading_fetch_goodreads($goodreads_apikey, $goodreads_userid) {
+  $url = 'http://www.goodreads.com/review/list?format=xml&v=2&shelf=currently-reading&id=' . $goodreads_userid . '&key=' . $goodreads_apikey;
+}

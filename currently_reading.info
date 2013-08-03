@@ -1,0 +1,4 @@
+name = Currently Reading
+description = Display a block of a 'currently reading' booklist extracted from a social booklist site.
+core = 7.x
+configure = admin/config/services/currently-reading
