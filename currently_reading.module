@@ -102,8 +102,7 @@ function currently_reading_config_form($form, &$form_state) {
 function currently_reading_fetch_goodreads($goodreads_apikey, $goodreads_userid) {
   // Goodreads branding.
   $content = '<p>Currently reading on Goodreads:</p>';
-
-  $content = $content . '<ul>';
+  // $content = $content . '<ul>';
 
   // Fetch currently-reading shelf.
   $url = 'http://www.goodreads.com/review/list?format=json&v=2&shelf=currently-reading&id=' . $goodreads_userid . '&key=' . $goodreads_apikey;
@@ -111,15 +110,19 @@ function currently_reading_fetch_goodreads($goodreads_apikey, $goodreads_userid)
   // dpm($json);
 
   // Display book data.
-  $books = json_decode($json, true);
+  $books = json_decode($json, true);   // Decode JSON as array.
   foreach ($books as $book) {
-    // Get the Goodreads data for this book id.
-    $content = $content . '<li>' . $book['id'];
-    // $book_url = 'http://www.goodreads.com/book/show?format=xml&id=' . $book_id . '&key=' . $goodreads_apikey;
+    // Get the Goodreads data for this book ISBN.
+    // $content = $content . '<li>' . $book['isbn'];
+    $book_url = 'http://www.goodreads.com/book/show?format=json&isbn=' . $book['isbn'] . '&key=' . $goodreads_apikey; 
+    $book_json = file_get_contents($book_url);
+    $book_review = json_decode($book_json, true);
+    // dpm($book_review);
     // title
     // authors.author.name (just get the first author?)
+    $content = $content . $book_review['reviews_widget'];
   }
 
-  $content = $content . '</ul>';
+  // $content = $content . '</ul>';
   return $content;
 }
