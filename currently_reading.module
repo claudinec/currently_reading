@@ -102,25 +102,23 @@ function currently_reading_config_form($form, &$form_state) {
 function currently_reading_fetch_goodreads($goodreads_apikey, $goodreads_userid) {
   // Goodreads branding.
   $content = '<p>Currently reading on Goodreads:</p>';
+
   $content = $content . '<ul>';
 
   // Fetch currently-reading shelf.
-  $url = 'http://www.goodreads.com/review/list?format=xml&v=2&shelf=currently-reading&id=' . $goodreads_userid . '&key=' . $goodreads_apikey;
-  $xml = file_get_contents($url);
-
-  $p = xml_parser_create();
-  xml_parse_into_struct($p, $xml, $values, $index);
-  xml_parser_free($p);
-  dpm($values);
+  $url = 'http://www.goodreads.com/review/list?format=json&v=2&shelf=currently-reading&id=' . $goodreads_userid . '&key=' . $goodreads_apikey;
+  $json = file_get_contents($url);
+  // dpm($json);
 
   // Display book data.
-  // foreach ($books as $book) {
+  $books = json_decode($json, true);
+  foreach ($books as $book) {
     // Get the Goodreads data for this book id.
-    // $content = $content . '<li>' . $book['id'];
+    $content = $content . '<li>' . $book['id'];
     // $book_url = 'http://www.goodreads.com/book/show?format=xml&id=' . $book_id . '&key=' . $goodreads_apikey;
     // title
     // authors.author.name (just get the first author?)
-  // }
+  }
 
   $content = $content . '</ul>';
   return $content;
