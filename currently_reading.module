@@ -78,6 +78,7 @@ function currently_reading_config_form($form, &$form_state) {
     'goodreads_apikey' => array(
       '#title' => t('Developer API key'),
       '#type' => 'textfield',
+      '#description' => 'Obtained from http://www.goodreads.com/api/keys',
       '#required' => TRUE,
       '#default_value' => $goodreads_apikey,
     ),
@@ -85,6 +86,7 @@ function currently_reading_config_form($form, &$form_state) {
     'goodreads_userid' => array(
       '#title' => t('User ID'),
       '#type' => 'textfield',
+      '#description' => 'Go to your user profile on Goodreads. In a URL of the form http://www.goodreads.com/user/show/[nnnn]-[xxxx], your User ID is [nnnn].',
       '#required' => TRUE,
       '#default_value' => $goodreads_userid,
     ),
@@ -102,6 +104,8 @@ function currently_reading_config_form($form, &$form_state) {
  * @todo I should cache these results.
  */
 function currently_reading_fetch_goodreads($goodreads_apikey, $goodreads_userid) {
+  $content = '';
+
   // Fetch currently-reading shelf.
   $url = 'http://www.goodreads.com/review/list?format=json&v=2&shelf=currently-reading&sort=date_started&order=d&id=' . $goodreads_userid . '&key=' . $goodreads_apikey;
   $json = file_get_contents($url);
