@@ -107,26 +107,23 @@ function currently_reading_fetch_goodreads($goodreads_apikey, $goodreads_userid)
   // $content = $content . '<ul>';
 
   // Fetch currently-reading shelf.
-  $url = 'http://www.goodreads.com/review/list?format=xml&v=2&shelf=currently-reading&sort=date_started&order=d&id=' . $goodreads_userid . '&key=' . $goodreads_apikey;
-  $xml = file_get_contents($url);
-  // dpm($xml);
-  $response = array(serialize($xml->GoodreadsResponse));
-  dpm($response);
-
-  // foreach ($xml->Request as $review) {
-  //   dpm($review);
-  // }
+  $url = 'http://www.goodreads.com/review/list?format=json&v=2&shelf=currently-reading&sort=date_started&order=d&id=' . $goodreads_userid . '&key=' . $goodreads_apikey;
+  $json = file_get_contents($url);
+  // dpm($json);
 
   // Display book data.
-  // foreach ($books as $book) {
-  //   $book_url = 'http://www.goodreads.com/book/show?format=json&isbn=' . $book['isbn'] . '&key=' . $goodreads_apikey; 
-  //   $book_json = file_get_contents($book_url);
-  //   $book_review = json_decode($book_json, true);
+  $books = json_decode($json, true);   // Decode JSON as array.
+  foreach ($books as $book) {
+    // Get the Goodreads data for this book ISBN.
+    // $content = $content . '<li>' . $book['isbn'];
+    $book_url = 'http://www.goodreads.com/book/show?format=json&isbn=' . $book['isbn'] . '&key=' . $goodreads_apikey; 
+    $book_json = file_get_contents($book_url);
+    $book_review = json_decode($book_json, true);
     // dpm($book_review);
     // title
     // authors.author.name (just get the first author?)
-    // $content = $content . $book_review['reviews_widget'];
-  // }
+    $content = $content . $book_review['reviews_widget'];
+  }
 
   // $content = $content . '</ul>';
   return $content;
